@@ -1,0 +1,18 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "keywords": [],
+  "scripts": {
+    "dev": "nodemon ./src/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^11.9.1",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
