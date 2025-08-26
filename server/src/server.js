@@ -6,8 +6,9 @@ const port = 8000;
 const app = express();
 
 app.get("/api/products", (req, res) => {
+  try {
 
-  const products = db.prepare(`
+    const products = db.prepare(`
     SELECT id,
            name,
            description,
@@ -18,7 +19,11 @@ app.get("/api/products", (req, res) => {
     FROM products
     `).all();
 
-  res.json(products);
+    res.json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 app.post("/api/products", express.json(), (req, res) => {
@@ -27,7 +32,7 @@ app.post("/api/products", express.json(), (req, res) => {
 
   }
   const { name, description, photo, label, sku, price } = req.body;
-  
+
   const insert = db.prepare(`
     INSERT INTO products (name, description, photo, label, sku, price)
     VALUES (?, ?, ?, ?, ?, ?)
@@ -37,5 +42,5 @@ app.post("/api/products", express.json(), (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on ${port}`);
-  });
+  console.log(`Server is running on ${port}`);
+});

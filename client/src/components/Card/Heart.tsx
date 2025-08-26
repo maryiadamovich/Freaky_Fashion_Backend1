@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 
-export default function Heart() {
-  const [isLiked, setIsLiked] = useState(false);
+export default function Heart(): JSX.Element {
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
-  const handleClick = (e) => {
+  const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
     setIsLiked(!isLiked);
@@ -31,3 +31,4 @@ export default function Heart() {
     </div>
   );
 }
+

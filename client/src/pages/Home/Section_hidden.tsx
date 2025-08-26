@@ -1,11 +1,11 @@
 import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
 import HiddenCard from '../../components/Card/HiddenCard';
 
-export default function Section_hidden() {
-
+export default function Section_hidden(): JSX.Element {
   const { isFull } = useWindowSizeValues();
 
-  const hiddenCards = Array.from({ length: 3 }, (_, index) => (
+  // Создаем массив из 3 элементов для цикла
+  const hiddenCards: JSX.Element[] = Array.from({ length: 3 }, (_, index: number) => (
     <HiddenCard key={index} />
   ));
 
@@ -18,3 +18,4 @@ export default function Section_hidden() {
     </section>
   );
 }
+

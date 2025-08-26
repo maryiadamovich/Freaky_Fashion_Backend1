@@ -23,16 +23,13 @@ export default function Navigation({ css: cssProp, ...rest }) {
         <nav css={[containerStyle, cssProp]} {...rest}>
             <ul>
                 <li><NavLink to="/" className={({ isActive }) => { return isActive ? "text-lime-500" : "text-black"; }}>
-                    Nyheter
-                </NavLink></li>
-                <li><NavLink to="product/svart-t-shirt" className={({ isActive }) => { return isActive || isLocation ? "text-lime-500" : "text-black"; }}>
-                    Topplistan
+                    Kläder
                 </NavLink></li>
                 <li><NavLink to="/search" className={({ isActive }) => { return isActive ? "text-lime-500" : "text-black"; }}>
-                    Rea
+                    Accessoarer
                 </NavLink></li>
                 <li><NavLink to="/admin/products" className="text-black">
-                    Kampanjer
+                    Skor
                 </NavLink></li>
             </ul>
         </nav>
