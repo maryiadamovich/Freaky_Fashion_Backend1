@@ -1,25 +1,30 @@
 import express from "express";
 import Database from 'better-sqlite3';
-const db = new Database('./db/products.db', { verbose: console.log });
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 const port = 8000;
 const app = express();
 
-app.get("/api/products", (req, res) => {
+const sqlite = new Database('./db/products.db', { verbose: console.log });
+export const db = drizzle(sqlite);
+
+export const allProducts = sqliteTable('products', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  photo: text('photo'),
+  label: text('label'),
+  sku: text('sku'),
+  price: real('price').notNull(),
+});
+
+app.get("/api/products", async (req, res) => {
   try {
 
-    const products = db.prepare(`
-    SELECT id,
-           name,
-           description,
-           photo,
-           label,
-           sku,
-           price
-    FROM products
-    `).all();
-
+    const products = await db.select().from(allProducts).all();
     res.json(products);
+
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Server error" });
