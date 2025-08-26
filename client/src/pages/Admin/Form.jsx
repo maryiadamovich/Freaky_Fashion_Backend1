@@ -84,8 +84,8 @@ export default function NewProduct() {
                     onChange={handleInputChange}
                 />
 
-                <label htmlFor="name">Pris</label>
-                <input className="border w-1/3" type="number" name="price" min="0" max="10000" step="0.01" value={formData.price}
+                <label htmlFor="price">Pris</label>
+                <input className="border w-1/3" type="real" name="price" min="0" max="10000" step="0.01" value={formData.price}
                     onChange={handleInputChange}
                 />
 

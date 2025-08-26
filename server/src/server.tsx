@@ -4,11 +4,13 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 const port = 8000;
-const app = express();
+const app: any = express();
 
+//create database and wrap it in drizzle
 const sqlite = new Database('./db/products.db', { verbose: console.log });
-export const db = drizzle(sqlite);
+export const db = drizzle(sqlite as any);
 
+//wrap table in drizzle
 export const allProducts = sqliteTable('products', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -18,6 +20,20 @@ export const allProducts = sqliteTable('products', {
   sku: text('sku'),
   price: real('price').notNull(),
 });
+
+//function to insert product into database with drizzle
+const insertProduct = async (
+  name: string,
+  description: string,
+  photo: string,
+  label: string,
+  sku: string,
+  price: number,
+) => {
+  await db.insert(allProducts).values({
+    name, description, photo, label, sku, price
+  });
+};
 
 app.get("/api/products", async (req, res) => {
   try {
@@ -31,19 +47,22 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.post("/api/products", express.json(), (req, res) => {
+app.post("/api/products", express.json(), async (req, res) => {
   if (req.body.photo === "") {
     req.body.photo = "https://placehold.co/300x400/grey/white?text=" + req.body.name;
 
   }
   const { name, description, photo, label, sku, price } = req.body;
 
-  const insert = db.prepare(`
-    INSERT INTO products (name, description, photo, label, sku, price)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
-  insert.run(name, description, photo, label, sku, price);
-  res.json({ message: "Product added" });
+  try {
+
+    await insertProduct(name, description, photo, label, sku, price);
+    res.json({ message: "Product added" });
+
+  } catch (error) {
+    console.error("Error adding product:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 app.listen(port, () => {
