@@ -103,7 +103,6 @@ export default function NewProduct() {
             <button className={`my-4 p-2 border rounded-md text-nowrap justify-self-start ${isMobil ? "w-1/2" : "w-40"}`} type="submit">
                 Lägg till
             </button>
-            <Button text="Tillbacka" size="w-1/3" link="/admin/products" />
         </form>
         </main >
     );

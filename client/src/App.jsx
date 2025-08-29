@@ -21,7 +21,7 @@ const gridStyle = css`
 function App() {
 
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin/products');
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <div id="root">
@@ -32,6 +32,9 @@ function App() {
         <Route path="product/:name" element={<DetailPage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="admin/products" element={<Admin />}>
+          <Route path="new" element={<Admin />} />
+        </Route>
+        <Route path="admin/categories" element={<Admin />}>
           <Route path="new" element={<Admin />} />
         </Route>
       </Routes>
