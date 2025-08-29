@@ -9,6 +9,7 @@ interface Product {
   label?: string;
   sku?: string;
   price: number;
+  kategori?: string;
 }
 
 // declare what will be send to the app in the value

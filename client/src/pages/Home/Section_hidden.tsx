@@ -1,4 +1,4 @@
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import HiddenCard from '../../components/Card/HiddenCard';
 
 export default function Section_hidden(): JSX.Element {

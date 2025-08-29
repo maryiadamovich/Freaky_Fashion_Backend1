@@ -1,4 +1,4 @@
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import Section_main from "./Section_main";
 import Section_variants from "./Section_variants";
 import { useParams } from "react-router-dom";

@@ -1,6 +1,6 @@
 import Card from '../../components/Card/Card';
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
-import { shuffleArray } from '../../contexts/shuffleArray';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
+import { useShuffleArray } from '../../hooks/useShuffleArray';
 
 
 export default function Section_variants() {
@@ -8,7 +8,7 @@ export default function Section_variants() {
 
   let index = 0;
 
-  const randomProductsSliced = shuffleArray(8);
+  const randomProductsSliced = useShuffleArray(8);
 
   return (
     <section className='py-4'>

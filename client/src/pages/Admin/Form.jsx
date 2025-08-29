@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import Button from "../../components/Button/Button";
 
 
@@ -14,6 +14,7 @@ export default function NewProduct() {
         label: "",
         sku: "",
         price: "",
+        kategori: "",
     });
 
     const handleInputChange = (event) => {
@@ -51,6 +52,7 @@ export default function NewProduct() {
             label: "",
             sku: "",
             price: "",
+            kategori: "",
         });
     };
 
@@ -62,7 +64,7 @@ export default function NewProduct() {
             <form onSubmit={handleSubmit} className={`grid grid-cols-1 ${isMobil ? "w-full" : "w-1/2"}`}>
                 <label htmlFor="name">Namn</label>
                 <input className="border w-2/3" type="text" id="name" name="name" required pattern=".*\S.*" value={formData.name}
-                     placeholder="Obligatoriskt" onChange={handleInputChange} maxLength="50" />
+                    placeholder="Obligatoriskt" onChange={handleInputChange} maxLength="25" />
 
                 <label htmlFor="description">Beskrivning</label>
                 <textarea className="border w-full" id="description" name="description" rows="5" cols="50" maxLength="500" value={formData.description}
@@ -89,11 +91,20 @@ export default function NewProduct() {
                     onChange={handleInputChange}
                 />
 
-                <button className={`my-4 p-2 border rounded-md text-nowrap justify-self-start ${isMobil ? "w-1/2" : "w-40"}`} type="submit">
-                    Lägg till
-                </button>
-                <Button text="Tillbacka" size="w-1/3" link="/admin/products" />
-            </form>
-        </main>
+                <label htmlFor="kategori">Kategori</label>
+                <select className="border w-full" id="kategori" name="kategori" value={formData.kategori}
+                    onChange={handleInputChange}>
+                    <option value="">Välj kategori</option>
+                    <option value="kläder">Kläder</option>
+                    <option value="accessoarer">Accessoarer</option>
+                    <option value="skor">Skor</option>
+                </select>
+
+            <button className={`my-4 p-2 border rounded-md text-nowrap justify-self-start ${isMobil ? "w-1/2" : "w-40"}`} type="submit">
+                Lägg till
+            </button>
+            <Button text="Tillbacka" size="w-1/3" link="/admin/products" />
+        </form>
+        </main >
     );
 }

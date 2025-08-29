@@ -1,8 +1,8 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import Card from "../../components/Card/Card";
-import { shuffleArray } from "../../contexts/shuffleArray";
+import { useShuffleArray } from "../../hooks/useShuffleArray";
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -10,7 +10,7 @@ export default function SearchPage() {
 
   const { isIPad, isFull } = useWindowSizeValues();
 
-  const randomProductsSliced = shuffleArray(3, query);
+  const randomProductsSliced = useShuffleArray(3, query);
 
   return (
     <main className="px-[1rem]">

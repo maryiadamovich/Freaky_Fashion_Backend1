@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useChangeTitle = (name, isActivePage) => {
+export const useChangeTitle = (name, isActivePage) => {
   useEffect(() => {
     if (isActivePage && name) {
       document.title = name; 
@@ -13,5 +13,3 @@ const useChangeTitle = (name, isActivePage) => {
     };
   }, [name, isActivePage]);
 };
-
-export default useChangeTitle;

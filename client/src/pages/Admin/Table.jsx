@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
-import { DataContext } from '../../contexts/dataServer';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues.js';
+import { DataContext } from '../../contexts/dataServer.tsx';
 import Button from "../../components/Button/Button";
 import TableRow from "../../components/Table/TableRow";
 

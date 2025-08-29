@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from "react";
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues.js';
 
-import { DataContext } from '../../contexts/dataServer';
+import { DataContext } from '../../contexts/dataServer.tsx';
 
 
 export default function DetailPage() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 
 export default function Aside() {
   

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { DataContext } from './dataServer';
+import { DataContext } from '../contexts/dataServer.tsx';
 
-export const shuffleArray = (slice, query = undefined) => {
+export const useShuffleArray = (slice, query = undefined) => {
 
     const { products } = useContext(DataContext);
     

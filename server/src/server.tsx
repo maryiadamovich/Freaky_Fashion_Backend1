@@ -19,6 +19,7 @@ export const allProducts = sqliteTable('products', {
   label: text('label'),
   sku: text('sku'),
   price: real('price').notNull(),
+  kategori: text('kategori'),
 });
 
 //function to insert product into database with drizzle
@@ -29,9 +30,10 @@ const insertProduct = async (
   label: string,
   sku: string,
   price: number,
+  kategori: string,
 ) => {
   await db.insert(allProducts).values({
-    name, description, photo, label, sku, price
+    name, description, photo, label, sku, price, kategori
   });
 };
 
@@ -52,11 +54,11 @@ app.post("/api/products", express.json(), async (req, res) => {
     req.body.photo = "https://placehold.co/300x400/grey/white?text=" + req.body.name;
 
   }
-  const { name, description, photo, label, sku, price } = req.body;
+  const { name, description, photo, label, sku, price, kategori } = req.body;
 
   try {
 
-    await insertProduct(name, description, photo, label, sku, price);
+    await insertProduct(name, description, photo, label, sku, price, kategori);
     res.json({ message: "Product added" });
 
   } catch (error) {

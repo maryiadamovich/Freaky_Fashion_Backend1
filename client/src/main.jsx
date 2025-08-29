@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { DataProvider } from './contexts/dataServer';
+import { DataProvider } from './contexts/dataServer.tsx';
 import { BrowserRouter } from 'react-router'
 import { createRoot } from 'react-dom/client'
 import './index.css'

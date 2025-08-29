@@ -1,4 +1,4 @@
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { Link } from 'react-router-dom';
 
 export default function AdminHeader() {

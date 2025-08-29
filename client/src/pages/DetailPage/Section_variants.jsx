@@ -1,9 +1,9 @@
 import Card from "../../components/Card/Card";
-import { shuffleArray } from "../../contexts/shuffleArray";
+import { useShuffleArray } from "../../hooks/useShuffleArray";
 
 export default function Section_variants({ size, name }) {
 
-    const randomProductsSliced = shuffleArray(3);
+    const randomProductsSliced = useShuffleArray(3);
 
     return (
 

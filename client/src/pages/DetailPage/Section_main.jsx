@@ -1,8 +1,8 @@
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues.js';
 import Button from "../../components/Button/Button";
 import { useContext } from "react";
-import { DataContext } from "../../contexts/dataServer";
-import { useChangeTitle } from '../../contexts/useChangeTitle';
+import { DataContext } from "../../contexts/dataServer.tsx";
+import { useChangeTitle } from '../../hooks/useChangeTitle';
 import { useLocation } from 'react-router-dom';
 
 export default function Section_main({ name }) {

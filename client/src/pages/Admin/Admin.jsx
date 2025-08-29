@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { useWindowSizeValues } from '../../contexts/useWindowSizeValues';
+import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import AdminHeader from "../../components/AdminHeader/Adminheader";
 import AdminAside from "../../components/AdminAside/AdminAside";
 import Table from './Table';
