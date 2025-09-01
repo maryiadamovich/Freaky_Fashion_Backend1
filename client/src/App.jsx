@@ -10,6 +10,7 @@ import Home from "./pages/Home/Home";
 import DetailPage from "./pages/DetailPage/DetailPage";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import Admin from "./pages/Admin/Admin";
+import LoginPage from "./pages/LoginPage/LoginPage";
 
 const gridStyle = css`
   display: grid;
@@ -31,6 +32,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="product/:name" element={<DetailPage />} />
         <Route path="search" element={<SearchPage />} />
+        <Route path="login" element={<LoginPage />} />
         <Route path="admin/products" element={<Admin />}>
           <Route path="new" element={<Admin />} />
         </Route>
