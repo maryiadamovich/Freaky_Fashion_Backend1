@@ -25,12 +25,12 @@ export const allProducts = sqliteTable('products', {
 //function to insert product into database with drizzle
 const insertProduct = async (
   name: string,
-  description: string,
-  photo: string,
-  label: string,
-  sku: string,
+  description: string = "",
+  photo: string = "",
+  label: string = "",
+  sku: string = "",
   price: number,
-  kategori: string,
+  kategori: string = "",
 ) => {
   await db.insert(allProducts).values({
     name, description, photo, label, sku, price, kategori
@@ -54,7 +54,22 @@ app.post("/api/products", express.json(), async (req, res) => {
     req.body.photo = "https://placehold.co/300x400/grey/white?text=" + req.body.name;
 
   }
-  const { name, description, photo, label, sku, price, kategori } = req.body;
+  const { 
+    name, 
+    description = "", 
+    photo = "", 
+    label = "", 
+    sku = "", 
+    price, 
+    kategori = "" 
+  } = req.body;
+
+  // Проверяем обязательные поля
+  if (!name || typeof price !== 'number') {
+    return res.status(400).json({ 
+      error: "Missing required fields: name and price are required" 
+    });
+  }
 
   try {
 

@@ -22,7 +22,7 @@ function Categories() {
     return (
         <main className='grid grid-cols-2 grid-rows-[15% 1fr] px-2'>
             <h1 className='self-center font-bold'>Kategorier</h1>
-            <Button link="/admin/categorier/new" size={`${isMobil ? "w-full" : "w-40"}`} text="Ny kategori" />
+            <Button link="/admin/categories/new" size={`${isMobil ? "w-full" : "w-40"}`} text="Ny kategori" />
 
             <table className="col-span-2 border">
                 <thead>

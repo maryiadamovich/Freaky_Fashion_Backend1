@@ -13,7 +13,7 @@ export default function NewProduct() {
         photo: "",
         label: "",
         sku: "",
-        price: "",
+        price: 0.00,
         kategori: "",
     });
 
@@ -28,7 +28,6 @@ export default function NewProduct() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(formData);
         fetch('/api/products', {
             method: 'POST',
             headers: {
@@ -45,15 +44,6 @@ export default function NewProduct() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        setFormData({
-            name: "",
-            description: "",
-            photo: "",
-            label: "",
-            sku: "",
-            price: "",
-            kategori: "",
-        });
     };
 
 
