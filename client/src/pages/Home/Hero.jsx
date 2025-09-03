@@ -2,13 +2,14 @@ import React, { useState, useRef, useContext } from "react";
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues.js';
 
 import { DataContext } from '../../contexts/dataServer.tsx';
+import { useUser } from '../../contexts/userInfo';
 
 
 export default function DetailPage() {
 
     const { isFull } = useWindowSizeValues();
-
     const { products } = useContext(DataContext);
+    const { user } = useUser();
 
     const [photo, setPhoto] = useState(null);
     const intervalRef = useRef(null);
@@ -39,6 +40,7 @@ export default function DetailPage() {
     return (
         <section className={`border p-2 my-4 ${isFull ? "flex flex-row-reverse justify-between" : ""}`}>
             <div>
+                {user && <p className="text-2xl font-bold mb-2">Välkommen {user.name}!</p>}
                 <img className={isFull ? "min-w-[600px] h-[400px]" : "w-full h-auto"} src={photo} alt="Main photo" />
             </div>
             <div className="text-center m-4">

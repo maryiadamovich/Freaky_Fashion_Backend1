@@ -2,11 +2,13 @@ import React from 'react';
 import { useState } from 'react';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../contexts/userInfo';
 
 export default function LoginPage() {
 
     const { isMobil } = useWindowSizeValues();
     const navigate = useNavigate();
+    const { setUser } = useUser();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -46,8 +48,16 @@ export default function LoginPage() {
             })
             .then((data) => {
                 console.log('Success:', data);
-                //alert(data.message);
-                //window.location.reload();
+
+                // create user object
+                const userData = {
+                    name: data.data.name,
+                    email: formData.email
+                };
+
+                // save to context
+                setUser(userData);
+
                 setFormData({
                     email: "",
                     password: "",

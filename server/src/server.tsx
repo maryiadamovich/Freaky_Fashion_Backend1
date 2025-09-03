@@ -111,8 +111,13 @@ app.post("/api/login", express.json(), async (req, res) => {
     }
 
     const isUser = await bcrypt.compare(password, userEmail[0].password);
+
+    const user = {
+      name: userEmail[0].name
+    }
+
     if (isUser) {
-      return res.json({ message: "User logged in" });
+      return res.json({ message: "User logged in", data: user });
     } else {
       return res.status(400).json({ error: "Invalid password" });
     }

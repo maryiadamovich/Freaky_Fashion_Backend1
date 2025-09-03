@@ -11,6 +11,7 @@ import DetailPage from "./pages/DetailPage/DetailPage";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import Admin from "./pages/Admin/Admin";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import { UserProvider } from "./contexts/userInfo";
 
 const gridStyle = css`
   display: grid;
@@ -28,18 +29,20 @@ function App() {
     <div id="root">
       {!isAdminRoute && <Header />}
 
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="product/:name" element={<DetailPage />} />
-        <Route path="search" element={<SearchPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="admin/products" element={<Admin />}>
-          <Route path="new" element={<Admin />} />
-        </Route>
-        <Route path="admin/categories" element={<Admin />}>
-          <Route path="new" element={<Admin />} />
-        </Route>
-      </Routes>
+      <UserProvider>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="product/:name" element={<DetailPage />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="admin/products" element={<Admin />}>
+            <Route path="new" element={<Admin />} />
+          </Route>
+          <Route path="admin/categories" element={<Admin />}>
+            <Route path="new" element={<Admin />} />
+          </Route>
+        </Routes>
+      </UserProvider>
 
       {!isAdminRoute && <Aside />}
       {!isAdminRoute && <Footer />}
