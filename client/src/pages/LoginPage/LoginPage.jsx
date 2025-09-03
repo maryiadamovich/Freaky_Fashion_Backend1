@@ -12,6 +12,7 @@ export default function LoginPage() {
         email: "",
         password: "", //John567doe
     });
+    const [error, setError] = useState("");
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -23,6 +24,7 @@ export default function LoginPage() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setError("");
 
         fetch('/api/login', {
             method: 'POST',
@@ -33,14 +35,13 @@ export default function LoginPage() {
         })
             .then((response) => {
                 console.log('Response status:', response.status);
-                
-                // Проверяем статус ответа
+
                 if (!response.ok) {
                     return response.json().then(errorData => {
                         throw new Error(errorData.error || 'Login failed');
                     });
                 }
-                
+
                 return response.json();
             })
             .then((data) => {
@@ -60,13 +61,18 @@ export default function LoginPage() {
             })
             .catch((error) => {
                 console.error('Error:', error);
+                setError(error.message || 'Login failed. Check email and password.');
             });
     };
-
 
     return (
         <main className="p-4">
             <h1 className='self-center font-bold'>Logga in</h1>
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
             <form onSubmit={handleSubmit} className={`grid grid-cols-1 ${isMobil ? "w-full" : "w-1/2"}`}>
                 <label htmlFor="email">E-post</label>
                 <input className="border w-2/3" type="email" id="email" name="email" required pattern=".*\S.*"
