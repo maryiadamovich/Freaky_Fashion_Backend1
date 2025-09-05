@@ -4,15 +4,20 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
+import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from './utils/jwt';
 
 const port = 8000;
 const app: any = express();
+
+app.use(express.json());
+//middleware for session
+
 
 //create database and wrap it in drizzle
 const sqlite = new Database('./db/products.db', { verbose: console.log });
 export const db = drizzle(sqlite as any);
 
-//wrap tables in drizzle
+//wrap table products in drizzle
 export const allProducts = sqliteTable('products', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -24,6 +29,7 @@ export const allProducts = sqliteTable('products', {
   kategori: text('kategori'),
 });
 
+//wrap table users in drizzle
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -47,6 +53,8 @@ const insertProduct = async (
 };
 
 app.get("/api/products", async (req, res) => {
+  console.log('Cookies received:', req.headers.cookie);
+  console.log('Session:', req.session);
   try {
 
     const products = await db.select().from(allProducts).all();
@@ -98,28 +106,48 @@ app.post("/api/login", express.json(), async (req, res) => {
     return res.status(400).json({ error: "Email and password are required." });
   }
 
+  //create hash of a password
   /*const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   console.log(hashedPassword);*/
 
   try {
 
+    //take user from database
     const userEmail = await db.select().from(users).where(eq(users.email, email)).all();
-    
+
     if (userEmail.length === 0) {
       return res.status(400).json({ error: "Invalid email" });
     }
 
+    //compare password with the hash
     const isUser = await bcrypt.compare(password, userEmail[0].password);
 
+    //take user data
     const user = {
       name: userEmail[0].name
     }
 
+    //generate tokens
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    //store refresh token in array
+    const refreshTokens: string[] = [];
+    refreshTokens.push(refreshToken);
+
+    //set refresh token in cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     if (isUser) {
-      return res.json({ message: "User logged in", data: user });
+      return res.json({ message: "User logged in", data: user, accessToken });
     } else {
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(401).json({ error: "Invalid password" });
     }
 
   } catch (error) {

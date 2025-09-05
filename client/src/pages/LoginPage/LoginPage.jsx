@@ -33,6 +33,7 @@ export default function LoginPage() {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(formData),
         })
             .then((response) => {
@@ -58,10 +59,13 @@ export default function LoginPage() {
                 // save to context
                 setUser(userData);
 
+                // clear form data
                 setFormData({
                     email: "",
                     password: "",
                 });
+
+                //localStorage.setItem('accessToken', accessToken);
 
                 if (data.message === "User logged in") {
                     navigate('/');
