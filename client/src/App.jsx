@@ -11,6 +11,7 @@ import DetailPage from "./pages/DetailPage/DetailPage";
 import SearchPage from "./pages/SearchPage/SearchPage";
 import Admin from "./pages/Admin/Admin";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import { UserProvider } from "./contexts/userInfo";
 
 const gridStyle = css`
@@ -35,6 +36,7 @@ function App() {
           <Route path="product/:name" element={<DetailPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
           <Route path="admin/products" element={<Admin />}>
             <Route path="new" element={<Admin />} />
           </Route>

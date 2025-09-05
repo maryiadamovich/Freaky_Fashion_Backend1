@@ -37,7 +37,7 @@ export const users = sqliteTable('users', {
   password: text('password').notNull(),
 });
 
-//function to insert product into database with drizzle
+//function to insert product into database products with drizzle
 const insertProduct = async (
   name: string,
   description: string = "",
@@ -51,6 +51,18 @@ const insertProduct = async (
     name, description, photo, label, sku, price, kategori
   });
 };
+
+//function to insert product into database users with drizzle
+const insertUser = async (
+  name: string,
+  email: string,
+  password: string,
+) => {
+  await db.insert(users).values({
+    name, email, password
+  });
+};
+
 
 app.get("/api/products", async (req, res) => {
   console.log('Cookies received:', req.headers.cookie);
@@ -98,6 +110,43 @@ app.post("/api/products", express.json(), async (req, res) => {
 });
 
 
+app.post("/api/register", express.json(), async (req, res) => {
+
+  const { name, email, password } = req.body;
+  console.log(name, email, password);
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
+
+  //create hash of a password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  //generate tokens
+  const accessToken = generateAccessToken({name});
+  const refreshToken = generateRefreshToken({name});
+
+  //set refresh token in cookie
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  });
+
+  
+  try {
+    await insertUser(name, email, hashedPassword);
+    return res.json({ message: "User added", accessToken });
+
+  } catch (error) {
+    console.error("Error logging in:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 app.post("/api/login", express.json(), async (req, res) => {
 
   const { email, password } = req.body;
@@ -131,10 +180,6 @@ app.post("/api/login", express.json(), async (req, res) => {
     //generate tokens
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
-
-    //store refresh token in array
-    const refreshTokens: string[] = [];
-    refreshTokens.push(refreshToken);
 
     //set refresh token in cookie
     res.cookie('refreshToken', refreshToken, {
