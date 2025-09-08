@@ -8,7 +8,7 @@ export default function Card({ className, product }) {
       <article className={className}>
         <div className="relative">
             <img className="w-full h-auto border" src={product.photo} alt="En ytterligare bild" />
-            <Heart />
+            <Heart product={product} />
         </div>
         <div className="flex flex-wrap">
           <span className="w-1/2 text-lg">{product.name}</span>

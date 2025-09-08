@@ -52,8 +52,9 @@ export default function LoginPage() {
 
                 // create user object
                 const userData = {
+                    id: data.data.id,
                     name: data.data.name,
-                    email: formData.email
+                    email: data.data.email
                 };
 
                 // save to context

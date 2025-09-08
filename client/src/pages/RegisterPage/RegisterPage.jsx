@@ -52,8 +52,9 @@ export default function RegisterPage() {
 
                 // create user object
                 const userData = {
-                    name: formData.name,
-                    email: formData.email
+                    id: data.id,
+                    name: data.name,
+                    email: data.email
                 };
 
                 // save to context
@@ -66,7 +67,7 @@ export default function RegisterPage() {
                     password: "",
                 });
 
-                localStorage.setItem('accessToken', data.accessToken);
+                sessionStorage.setItem('accessToken', data.accessToken);
 
                 if (data.message === "User logged in") {
                     navigate('/');

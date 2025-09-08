@@ -12,6 +12,7 @@ import SearchPage from "./pages/SearchPage/SearchPage";
 import Admin from "./pages/Admin/Admin";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import FavoritesPage from "./pages/FavoritesPage/FavoritesPage";
 import { UserProvider } from "./contexts/userInfo";
 
 const gridStyle = css`
@@ -37,6 +38,7 @@ function App() {
           <Route path="search" element={<SearchPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
           <Route path="admin/products" element={<Admin />}>
             <Route path="new" element={<Admin />} />
           </Route>

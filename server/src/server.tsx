@@ -37,6 +37,12 @@ export const users = sqliteTable('users', {
   password: text('password').notNull(),
 });
 
+//wrap table favorites in drizzle
+export const favorites = sqliteTable('favorites', {
+  user_id: integer('user_id').notNull(),
+  product_id: integer('product_id').notNull(),
+});
+
 //function to insert product into database products with drizzle
 const insertProduct = async (
   name: string,
@@ -63,10 +69,19 @@ const insertUser = async (
   });
 };
 
+//function to insert favorite into database favorites with drizzle
+const insertFavorite = async (
+  user_id: number,
+  product_id: number,
+) => {
+  await db.insert(favorites).values({
+    user_id, product_id
+  });
+};
 
 app.get("/api/products", async (req, res) => {
-  console.log('Cookies received:', req.headers.cookie);
-  console.log('Session:', req.session);
+  //console.log('Cookies received:', req.headers.cookie);
+  //console.log('Session:', req.session);
   try {
 
     const products = await db.select().from(allProducts).all();
@@ -155,11 +170,6 @@ app.post("/api/login", express.json(), async (req, res) => {
     return res.status(400).json({ error: "Email and password are required." });
   }
 
-  //create hash of a password
-  /*const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  console.log(hashedPassword);*/
-
   try {
 
     //take user from database
@@ -174,7 +184,9 @@ app.post("/api/login", express.json(), async (req, res) => {
 
     //take user data
     const user = {
-      name: userEmail[0].name
+      id: userEmail[0].id,
+      name: userEmail[0].name,
+      email: userEmail[0].email
     }
 
     //generate tokens
@@ -201,7 +213,20 @@ app.post("/api/login", express.json(), async (req, res) => {
   }
 });
 
+app.post("/api/favorites", express.json(), async (req, res) => {
+  const { product_id, user_id } = req.body;
+  console.log(product_id, user_id);
 
+  try {
+
+    
+    await insertFavorite(user_id, product_id);
+  } catch (error) {
+    console.error("Error adding favorite:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+  return res.json({ message: "Favorite added" });
+});
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
