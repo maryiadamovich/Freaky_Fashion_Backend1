@@ -139,8 +139,8 @@ app.post("/api/register", express.json(), async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   //generate tokens
-  const accessToken = generateAccessToken({name});
-  const refreshToken = generateRefreshToken({name});
+  const accessToken = generateAccessToken({ name });
+  const refreshToken = generateRefreshToken({ name });
 
   //set refresh token in cookie
   res.cookie('refreshToken', refreshToken, {
@@ -150,7 +150,7 @@ app.post("/api/register", express.json(), async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 
-  
+
   try {
     await insertUser(name, email, hashedPassword);
     return res.json({ message: "User added", accessToken });
@@ -215,19 +215,44 @@ app.post("/api/login", express.json(), async (req, res) => {
 
 app.post("/api/favorites", express.json(), async (req, res) => {
   const { product_id, user_id } = req.body;
-  console.log(product_id, user_id);
 
   try {
-
-    
     await insertFavorite(user_id, product_id);
   } catch (error) {
     console.error("Error adding favorite:", error);
+
+    if (error.code === 'SQLITE_CONSTRAINT' || error.message?.includes('UNIQUE constraint failed')) {
+      return res.status(400).json({ error: "This product is already in your favorites" });
+    }
     return res.status(500).json({ error: "Server error" });
   }
+  
   return res.json({ message: "Favorite added" });
 });
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
+});
+
+app.get("/api/favorites", async (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "user_id is required" });
+  }
+
+  try {
+    const userFavorites = await db.select().from(favorites).where(eq(favorites.user_id, parseInt(user_id))).all();
+    const favoriteProducts = [];
+    for (const favorite of userFavorites) { 
+      const product = await db.select().from(allProducts).where(eq(allProducts.id, favorite.product_id)).all();
+      if (product.length > 0) {
+        favoriteProducts.push(product[0]);
+      }
+    }
+    return res.json(favoriteProducts);
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
 });

@@ -59,7 +59,8 @@ export default function LoginPage() {
 
                 // save to context
                 setUser(userData);
-
+                // save to local storage
+                localStorage.setItem('user', JSON.stringify(userData));
                 // clear form data
                 setFormData({
                     email: "",
