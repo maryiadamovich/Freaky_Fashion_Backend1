@@ -147,7 +147,7 @@ app.post("/api/register", express.json(), async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
   });
 
 
@@ -198,7 +198,7 @@ app.post("/api/login", express.json(), async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
     });
 
     if (isUser) {
@@ -255,4 +255,16 @@ app.get("/api/favorites", async (req, res) => {
     console.error("Error fetching favorites:", error);
     return res.status(500).json({ error: "Server error" });
   }
+});
+//delete refresh token
+app.post('/api/logout', (req, res) => {
+  res.cookie('refreshToken', '', {
+    httpOnly: true, 
+    secure: true, 
+    expires: new Date(0), 
+    path: '/', 
+  });
+  // clear session
+  //req.session = null;
+  res.status(200).send({ message: 'Logout successful' });
 });

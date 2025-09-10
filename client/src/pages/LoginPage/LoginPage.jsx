@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/userInfo';
-import { setToken, getUser } from '../../moduls/storage';
+import { setToken, getUser, clearUser } from '../../moduls/storage';
 
 export default function LoginPage() {
 
@@ -11,6 +11,10 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { setUser } = useUser();
     const user = getUser();
+    const logout = () => {
+        clearUser();
+        setUser(null);
+    }
 
     const [formData, setFormData] = useState({
         email: "",
@@ -109,6 +113,7 @@ export default function LoginPage() {
                         value={formData.password} onChange={handleInputChange} />
                     <button className={`my-4 p-2 border rounded-md text-nowrap justify-self-start ${isMobil ? "w-1/2" : "w-40"}`} type="submit">Login</button>
                 </form>
+                <button className="font-bold text-gray-400 hover:text-gray-600 cursor-pointer" onClick={logout}>Logga ut</button>
             </main>
         );
     }
