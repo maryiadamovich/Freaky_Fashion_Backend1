@@ -31,7 +31,6 @@ export default function FavoritesPage() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 // check that data is an array
                 if (Array.isArray(data)) {
                     setFavorites(data);

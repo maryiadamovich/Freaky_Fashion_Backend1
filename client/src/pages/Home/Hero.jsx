@@ -2,14 +2,15 @@ import React, { useState, useRef, useContext } from "react";
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues.js';
 
 import { DataContext } from '../../contexts/dataServer.tsx';
-import { useUser } from '../../contexts/userInfo';
+import { getUser } from '../../moduls/storage';
 
 
 export default function DetailPage() {
 
     const { isFull } = useWindowSizeValues();
     const { products } = useContext(DataContext);
-    const { user } = useUser();
+   
+    const user = getUser();
 
     const [photo, setPhoto] = useState(null);
     const intervalRef = useRef(null);

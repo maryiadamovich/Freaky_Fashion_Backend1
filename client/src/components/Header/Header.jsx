@@ -7,7 +7,7 @@ import Navigation from './Navigation';
 
 const gridStyle = css`
   display: grid;
-  grid-template-columns: 1fr 15%;
+  grid-template-columns: 1fr 35%;
   grid-template-areas: 
     "logo logo"
     "search icons"
