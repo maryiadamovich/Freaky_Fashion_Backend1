@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/userInfo';
-import { setToken, getUser, clearUser } from '../../moduls/storage';
+import { setToken, getUser, setUserStorage, clearUser } from '../../moduls/storage';
 
 export default function LoginPage() {
 
@@ -11,14 +11,17 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { setUser } = useUser();
     const user = getUser();
+  
     const logout = () => {
         clearUser();
         setUser(null);
+        navigate('/');
     }
 
     const [formData, setFormData] = useState({
         email: "",
         password: "", //John567doe
+                      //Jane123doe
     });
     const [error, setError] = useState("");
 
@@ -56,6 +59,10 @@ export default function LoginPage() {
             .then((data) => {
                 console.log('Success:', data);
 
+                // save to Session storage
+                setToken(data.accessToken);
+                setUserStorage(data.data);
+
                 // create user object
                 const userData = {
                     id: data.data.id,
@@ -65,8 +72,7 @@ export default function LoginPage() {
 
                 // save to context
                 setUser(userData);
-                // save to Session storage
-                setToken(data.accessToken);
+                
                 // clear form data
                 setFormData({
                     email: "",
@@ -90,6 +96,7 @@ export default function LoginPage() {
         return (
             <main className="p-4">
                 <h2 className="font-bold text-red-700 text-2xl">{user.name} är redan inloggad</h2>
+                <button className="font-bold text-gray-400 hover:text-gray-600 cursor-pointer" onClick={logout}>Logga ut</button>
             </main>
         );
     } else {

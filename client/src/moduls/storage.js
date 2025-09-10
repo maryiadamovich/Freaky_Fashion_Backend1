@@ -6,7 +6,7 @@ export const getUser = () => {
     return null;
 };
 
-export const setUser = (user) => {
+export const setUserStorage = (user) => {
     sessionStorage.setItem('user', JSON.stringify(user));
 };
 

@@ -128,10 +128,15 @@ app.post("/api/products", express.json(), async (req, res) => {
 app.post("/api/register", express.json(), async (req, res) => {
 
   const { name, email, password } = req.body;
-  console.log(name, email, password);
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required." });
+  }
+  if (email) {
+    const user = await db.select().from(users).where(eq(users.email, email)).all();
+    if (user.length > 0) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
   }
 
   //create hash of a password
@@ -150,10 +155,17 @@ app.post("/api/register", express.json(), async (req, res) => {
     maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
   });
 
-
   try {
     await insertUser(name, email, hashedPassword);
-    return res.json({ message: "User added", accessToken });
+    //take user from database
+    const userEmail = await db.select().from(users).where(eq(users.email, email)).all();
+    //take user data
+    const user = {
+      id: userEmail[0].id,
+      name: userEmail[0].name,
+      email: userEmail[0].email
+    }
+    return res.json({ message: "User added", data: user, accessToken });
 
   } catch (error) {
     console.error("Error logging in:", error);
@@ -226,25 +238,26 @@ app.post("/api/favorites", express.json(), async (req, res) => {
     }
     return res.status(500).json({ error: "Server error" });
   }
-  
+
   return res.json({ message: "Favorite added" });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on ${port}`);
-});
-
 app.get("/api/favorites", async (req, res) => {
-  const { user_id } = req.query;
+  const user_id = req.query.user_id;
 
   if (!user_id) {
     return res.status(400).json({ error: "user_id is required" });
   }
 
   try {
-    const userFavorites = await db.select().from(favorites).where(eq(favorites.user_id, parseInt(user_id))).all();
+    const userFavorites = await db.select().from(favorites).where(eq(favorites.user_id, parseInt(user_id)));
+    console.log(userFavorites);
+    // If no favorites found for the user
+    if (userFavorites.length === 0) {
+      return res.status(404).json({ message: "No favorites found for this user" });
+    }
     const favoriteProducts = [];
-    for (const favorite of userFavorites) { 
+    for (const favorite of userFavorites) {
       const product = await db.select().from(allProducts).where(eq(allProducts.id, favorite.product_id)).all();
       if (product.length > 0) {
         favoriteProducts.push(product[0]);
@@ -259,12 +272,19 @@ app.get("/api/favorites", async (req, res) => {
 //delete refresh token
 app.post('/api/logout', (req, res) => {
   res.cookie('refreshToken', '', {
-    httpOnly: true, 
-    secure: true, 
-    expires: new Date(0), 
-    path: '/', 
+    httpOnly: true,
+    secure: true,
+    expires: new Date(0),
+    path: '/',
   });
   // clear session
   //req.session = null;
   res.status(200).send({ message: 'Logout successful' });
+});
+
+
+
+
+app.listen(port, () => {
+  console.log(`Server is running on ${port}`);
 });

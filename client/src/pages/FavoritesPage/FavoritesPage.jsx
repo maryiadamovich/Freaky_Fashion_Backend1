@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card/Card';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
-
-
-
+import { getUser } from '../../moduls/storage';
 
 export default function FavoritesPage() {
     const { isFull, isIPad } = useWindowSizeValues();
     const [favorites, setFavorites] = useState([]);
-    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser)); // restore data from localStorage
-        }
-    }, []);
-
-    useEffect(() => {
+        const user = getUser();
+       
         if (!user) return;
 
         const url = '/api/favorites?user_id=' + user.id;
@@ -42,7 +34,7 @@ export default function FavoritesPage() {
             .catch(error => {
                 alert(error);
             });
-    }, [user]);
+    }, []);
     return (
         <main className="px-[1rem]">
             <h1 className="text-center font-bold my-4 text-xl">Mina favoriter</h1>

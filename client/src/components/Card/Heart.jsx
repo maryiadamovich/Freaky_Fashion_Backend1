@@ -1,24 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../contexts/userInfo';
+import { getUser } from '../../moduls/storage';
 
 export default function Heart({ product }) {
   const [isLiked, setIsLiked] = useState(false);
 
-  const { isLoggedIn, user } = useUser();
+  const user = getUser();
   const navigate = useNavigate();
 
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isLoggedIn || !user) {
+    if (!user) {
       navigate('/login');
       return;
     }
 
     setIsLiked(!isLiked);
-
     // send product id and email to the server
     fetch(`/api/favorites`, {
       method: 'POST',

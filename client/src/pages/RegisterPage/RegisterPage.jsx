@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/userInfo';
+import { setToken, setUserStorage } from '../../moduls/storage';
 
 export default function RegisterPage() {
     const { isMobil } = useWindowSizeValues();
@@ -13,6 +14,7 @@ export default function RegisterPage() {
         name: "",
         email: "",
         password: "", //John567doe
+                      //Jane123doe
     });
     const [error, setError] = useState("");
 
@@ -49,25 +51,22 @@ export default function RegisterPage() {
             })
             .then((data) => {
                 console.log('Success:', data);
-
+                setToken(data.accessToken);
+                setUserStorage(data.data);
                 // create user object
                 const userData = {
                     id: data.id,
                     name: data.name,
                     email: data.email
                 };
-
                 // save to context
                 setUser(userData);
-
                 // clear form data
                 setFormData({
                     name: "",
                     email: "",
                     password: "",
                 });
-
-                sessionStorage.setItem('accessToken', data.accessToken);
 
                 if (data.message === "User logged in") {
                     navigate('/');

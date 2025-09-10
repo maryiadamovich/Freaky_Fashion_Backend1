@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { Link } from "react-router-dom";
+import { getToken } from '../../moduls/storage';
 
 export default function Icons({ css: cssProp, ...rest }) {
     const containerStyle = css`
@@ -9,7 +10,7 @@ export default function Icons({ css: cssProp, ...rest }) {
         align-items: center;
     `;
 
-    const token = sessionStorage.getItem('accessToken');
+    const token = getToken();
 
     return (
         <div css={[containerStyle, cssProp]} {...rest}>
