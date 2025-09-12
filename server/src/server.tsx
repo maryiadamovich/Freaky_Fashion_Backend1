@@ -5,13 +5,14 @@ import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken } from './utils/jwt';
+import cookieParser from 'cookie-parser';
 
 const port = 8000;
 const app: any = express();
 
 app.use(express.json());
-//middleware for session
-
+//middleware for cookies
+app.use(cookieParser());
 
 //create database and wrap it in drizzle
 const sqlite = new Database('./db/products.db', { verbose: console.log });
@@ -244,14 +245,29 @@ app.post("/api/favorites", express.json(), async (req, res) => {
 
 app.get("/api/favorites", async (req, res) => {
   const user_id = req.query.user_id;
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ error: "No token" });
+  }
 
   if (!user_id) {
     return res.status(400).json({ error: "user_id is required" });
   }
 
+  const tokenUser = token.split(' ')[1];//remove Bearer
+  let isTokenValid = false;
+  try {
+    const userVerifiedToken = verifyAccessToken(tokenUser);
+    if (userVerifiedToken){
+      isTokenValid = true;
+    }
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+  
   try {
     const userFavorites = await db.select().from(favorites).where(eq(favorites.user_id, parseInt(user_id)));
-    console.log(userFavorites);
     // If no favorites found for the user
     if (userFavorites.length === 0) {
       return res.status(404).json({ message: "No favorites found for this user" });
@@ -281,6 +297,23 @@ app.post('/api/logout', (req, res) => {
   //req.session = null;
   res.status(200).send({ message: 'Logout successful' });
 });
+
+app.post('/auth/refresh', (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({ error: "No refresh token" });
+  }
+  try {
+    const user = verifyRefreshToken(token);
+    const accessToken = generateAccessToken(user);
+    res.json({ accessToken });
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return res.status(401).json({ error: "Invalid refresh token" });
+  }
+});
+
 
 
 
