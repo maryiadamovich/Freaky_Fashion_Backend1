@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useWindowSizeValues } from '../../hooks/useWindowSizeValues';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/userInfo';
-import { setToken, getUser, setUserStorage, clearUser } from '../../moduls/storage';
+import { getToken, setToken, getUser, setUserStorage, clearUser } from '../../moduls/storage';
 
 export default function LoginPage() {
 
@@ -41,6 +41,7 @@ export default function LoginPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`,
             },
             credentials: 'include',
             body: JSON.stringify(formData),
@@ -59,27 +60,17 @@ export default function LoginPage() {
             .then((data) => {
                 console.log('Success:', data);
 
-                // save to Session storage
-                setToken(data.accessToken);
-                setUserStorage(data.data);
-
-                // create user object
-                const userData = {
-                    id: data.data.id,
-                    name: data.data.name,
-                    email: data.data.email
-                };
-
-                // save to context
-                setUser(userData);
-                
+                // check the accesstoken
+                if (data.accessToken!==getToken()) {
+                    setToken(data.accessToken);
+                    setUserStorage(data.data);
+                }
+ 
                 // clear form data
                 setFormData({
                     email: "",
                     password: "",
                 });
-
-                sessionStorage.setItem('accessToken', data.accessToken);
 
                 if (data.message === "User logged in") {
                     navigate('/');

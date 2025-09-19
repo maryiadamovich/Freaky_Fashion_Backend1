@@ -153,7 +153,7 @@ app.post("/api/register", express.json(), async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
-    maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 
   try {
@@ -178,23 +178,28 @@ app.post("/api/register", express.json(), async (req, res) => {
 app.post("/api/login", express.json(), async (req, res) => {
 
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required." });
-  }
-
-  try {
-
-    //take user from database
-    const userEmail = await db.select().from(users).where(eq(users.email, email)).all();
-
-    if (userEmail.length === 0) {
-      return res.status(400).json({ error: "Invalid email" });
+  let accessToken = req.headers.authorization.split(' ')[1];//remove Bearer
+  let refreshToken = req.cookies.refreshToken;
+  console.log(accessToken, refreshToken);
+  if (!accessToken || !refreshToken) {
+    if (email) {
+      const user = await db.select().from(users).where(eq(users.email, email)).all();
+      if (user.length > 0) {
+        const isUser = await bcrypt.compare(password, user[0].password);
+        if (isUser) {
+          accessToken = generateAccessToken(user[0]);//generate new accesstoken
+          refreshToken = generateRefreshToken(user[0]);//generate new refreshtoken
+        }
+      }
     }
-
-    //compare password with the hash
-    const isUser = await bcrypt.compare(password, userEmail[0].password);
-
+    //set refresh token in cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    const userEmail = await db.select().from(users).where(eq(users.email, email)).all();
     //take user data
     const user = {
       id: userEmail[0].id,
@@ -202,21 +207,50 @@ app.post("/api/login", express.json(), async (req, res) => {
       email: userEmail[0].email
     }
 
-    //generate tokens
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+    return res.json({ message: "User logged in", accessToken, refreshToken, data: user });
+  }
 
-    //set refresh token in cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
-    });
-
-    if (isUser) {
-      return res.json({ message: "User logged in", data: user, accessToken });
+  let isTokenValid = false;
+  try {
+    const userVerifiedToken = verifyAccessToken(accessToken);//verify acesstoken
+    let userVerifiedRefreshToken;
+    if (userVerifiedToken) {
+      isTokenValid = true;
     } else {
+      userVerifiedRefreshToken = verifyRefreshToken(refreshToken); //verify refreshtoken
+      if (userVerifiedRefreshToken) {
+        accessToken = generateAccessToken(userVerifiedToken);//generate new accesstoken
+        isTokenValid = true;
+      }
+    }
+    if (!userVerifiedToken && !userVerifiedRefreshToken) {
+      accessToken = generateAccessToken(userVerifiedToken);//generate new accesstoken
+      refreshToken = generateRefreshToken(userVerifiedToken);//generate new refreshtoken
+      isTokenValid = true;
+    }
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
+
+  try {
+    //take user from database
+    const userEmail = await db.select().from(users).where(eq(users.email, email)).all();
+
+    if (userEmail.length === 0) {
+      return res.status(400).json({ error: "Invalid email" });
+    }
+
+    try {
+      //compare password with the hash
+      const isUser = await bcrypt.compare(password, userEmail[0].password);
+      if (isUser) {
+        return res.json({ message: "User logged in", accessToken });
+      }
+    } catch (error) {
       return res.status(401).json({ error: "Invalid password" });
     }
 
@@ -259,13 +293,13 @@ app.get("/api/favorites", async (req, res) => {
   let isTokenValid = false;
   try {
     const userVerifiedToken = verifyAccessToken(tokenUser);
-    if (userVerifiedToken){
+    if (userVerifiedToken) {
       isTokenValid = true;
     }
   } catch (error) {
     return res.status(401).json({ error: "Invalid or expired token" });
   }
-  
+
   try {
     const userFavorites = await db.select().from(favorites).where(eq(favorites.user_id, parseInt(user_id)));
     // If no favorites found for the user
