@@ -151,7 +151,6 @@ app.post("/api/register", express.json(), async (req, res) => {
   //set refresh token in cookie
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: true,
     sameSite: 'strict',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
@@ -180,7 +179,8 @@ app.post("/api/login", express.json(), async (req, res) => {
   const { email, password } = req.body;
   let accessToken = req.headers.authorization.split(' ')[1];//remove Bearer
   let refreshToken = req.cookies.refreshToken;
-  console.log(accessToken, refreshToken);
+
+  //if I don't have actuall tokens I generate new ones
   if (!accessToken || !refreshToken) {
     if (email) {
       const user = await db.select().from(users).where(eq(users.email, email)).all();
@@ -195,7 +195,6 @@ app.post("/api/login", express.json(), async (req, res) => {
     //set refresh token in cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
@@ -209,7 +208,7 @@ app.post("/api/login", express.json(), async (req, res) => {
 
     return res.json({ message: "User logged in", accessToken, refreshToken, data: user });
   }
-
+  //if I have actuall tokens I verify them
   let isTokenValid = false;
   try {
     const userVerifiedToken = verifyAccessToken(accessToken);//verify acesstoken
@@ -313,7 +312,7 @@ app.get("/api/favorites", async (req, res) => {
         favoriteProducts.push(product[0]);
       }
     }
-    return res.json(favoriteProducts);
+    return res.status(200).json(favoriteProducts);
   } catch (error) {
     console.error("Error fetching favorites:", error);
     return res.status(500).json({ error: "Server error" });
@@ -323,7 +322,6 @@ app.get("/api/favorites", async (req, res) => {
 app.post('/api/logout', (req, res) => {
   res.cookie('refreshToken', '', {
     httpOnly: true,
-    secure: true,
     expires: new Date(0),
     path: '/',
   });
@@ -332,7 +330,7 @@ app.post('/api/logout', (req, res) => {
   res.status(200).send({ message: 'Logout successful' });
 });
 
-app.post('/auth/refresh', (req, res) => {
+app.post('/api/auth/refresh', (req, res) => {
   const token = req.cookies.refreshToken;
 
   if (!token) {
